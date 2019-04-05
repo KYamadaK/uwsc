@@ -1,0 +1,69 @@
+﻿main()
+
+Procedure main()
+	Dim Mado
+
+	Mado = GETACTIVEOLEOBJ("InternetExplorer.Application")
+	IELINK(Mado,"窓の杜から")
+	download()
+
+Fend
+
+Procedure download()
+
+	Dim Idwindow
+	Dim DirectUIHWND
+	Dim PopUpHandle
+	Dim IdNoticeBar
+	
+	BALLOON("通知バー")
+	
+	repeat
+		
+		SLEEP(0.5)
+		Idwindow = GETID("Internet Explorer","IEFrame")
+		DirectUIHWND = GETCTLHND(Idwindow,"DirectUIHWND",2)
+
+		IF DirectUIHWND < 0 Then
+
+			DirectUIHWND = GETCTLHND(Idwindow,"DirectUIHWND",1) 
+
+		EndIF
+
+	until DirectUIHWND > 0
+
+	SLEEP(1)
+
+	repeat
+		PopUpHandle = HNDtoID(DirectUIHWND)
+	until PopUpHandle > 0
+
+	BALLOON("保存")
+	
+	repeat
+
+		SLEEP(0.5)
+		DirectUIHWND = GETCTLHND(Idwindow,"DirectUIHWND",2)
+		IF DirectUIHWND <= 0 Then
+
+			DirectUIHWND = GETCTLHND(Idwindow,"DirectUIHWND",1)
+
+		EndIF
+			PopUpHandle = HNDtoID(DirectUIHWND)
+			IdNoticeBar = CLKITEM(PopUpHandle,"保存",CLK_ACC)
+
+	until IdNoticeBar = True
+
+	repeat
+
+		SLEEP(0.5)
+		BALLOON("ダウンロード中")
+
+	until POS("ダウンロードが完了",GETSTR(PopUpHandle,1,STR_ACC_STATIC)) > 0
+	SLEEP(2)
+	CLKITEM(PopUpHandle,"閉じる",CLK_ACC)
+
+Fend
+
+//テストリンク
+//https://forest.watch.impress.co.jp/library/software/lhasa/download_10414.html
